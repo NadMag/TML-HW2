@@ -47,7 +47,7 @@ def free_adv_train(model, data_tr, criterion, optimizer, lr_scheduler, \
     # train - FILLE ME
     model = model.to(device)
 
-    for epoch in outer_epochs:
+    for epoch in range(outer_epochs):
         for i, (inputs, labels) in enumerate(loader_tr, 0):
             inputs = inputs.to(device)
             labels = labels.to(device)

@@ -35,7 +35,7 @@ def run_standard_training():
     transforms_tr = transforms.Compose([transforms.ToTensor(),
                                         transforms.RandomHorizontalFlip(),
                                         transforms.RandomRotation(8),
-                                        transforms.RandomResizedCrop((32,32))])
+                                        transforms.RandomResizedCrop((32,32), antialias=True)])
     data_tr = utils.TMLDataset('train', transform=transforms_tr)
 
     # init model
@@ -71,7 +71,7 @@ def run_free_adv_training():
     transforms_tr = transforms.Compose([transforms.ToTensor(),
                                         transforms.RandomHorizontalFlip(),
                                         transforms.RandomRotation(8),
-                                        transforms.RandomResizedCrop((32,32))])
+                                        transforms.RandomResizedCrop((32,32), antialias=True)])
     data_tr = utils.TMLDataset('train', transform=transforms_tr)
 
     # init model
