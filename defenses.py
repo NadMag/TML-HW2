@@ -54,10 +54,10 @@ def free_adv_train(model, data_tr, criterion, optimizer, lr_scheduler, \
             curr_batch_size = inputs.shape[0]
 
             for k in range(m):
-                adv_input.requires_grad = True
                 adv_input = inputs + delta[:curr_batch_size]
                 # Paper doesnt explicitly say to clip, but I assume we do - like in PGD
                 adv_input = torch.clip(adv_input, 0, 1)
+                adv_input.requires_grad = True
 
                 optimizer.zero_grad()
                 outputs = model(adv_input)
@@ -66,7 +66,7 @@ def free_adv_train(model, data_tr, criterion, optimizer, lr_scheduler, \
                 optimizer.step()
 
                 adv_grad = adv_input.grad
-                delta = delta[:curr_batch_size] + (eps *torch.sign(adv_grad))
+                delta[:curr_batch_size] = delta[:curr_batch_size] + (eps *torch.sign(adv_grad))
                 delta = torch.clip(delta, -eps, eps)
 
                 # I Assume iteration == one (adverserial) batch processing 
@@ -74,8 +74,8 @@ def free_adv_train(model, data_tr, criterion, optimizer, lr_scheduler, \
                 if (iters_elapsed % scheduler_step_iters == 0):
                     lr_scheduler.step()
 
-            #TODO: Remove!!!!        
-            print(f'Epoch: {epoch}: {loss.item()}') 
+        #TODO: Remove!!!!        
+        print(f'Epoch: {epoch}: {loss.item()}') 
 
     # done
     return model

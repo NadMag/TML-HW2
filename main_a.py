@@ -35,7 +35,7 @@ def run_standard_training():
     transforms_tr = transforms.Compose([transforms.ToTensor(),
                                         transforms.RandomHorizontalFlip(),
                                         transforms.RandomRotation(8),
-                                        transforms.RandomResizedCrop((32,32), antialias=True)])
+                                        transforms.RandomResizedCrop((32,32))])
     data_tr = utils.TMLDataset('train', transform=transforms_tr)
 
     # init model
@@ -71,7 +71,7 @@ def run_free_adv_training():
     transforms_tr = transforms.Compose([transforms.ToTensor(),
                                         transforms.RandomHorizontalFlip(),
                                         transforms.RandomRotation(8),
-                                        transforms.RandomResizedCrop((32,32), antialias=True)])
+                                        transforms.RandomResizedCrop((32,32))])
     data_tr = utils.TMLDataset('train', transform=transforms_tr)
 
     # init model
@@ -138,10 +138,15 @@ def run_evaluation():
 
 if __name__=='__main__':
     args = parse_arguments()
-    if args.train:
+    if args.train > 1:
+        print(f'Adversarially training a model with m={args.train}')
+        t = run_free_adv_training(m=args.train)
+        print(f'Time (in seconds) to complete free adversarial training: {t:0.4f}')
+
+    if args.train == 1:
         print('Training standard model...')
-        t = run_standard_training()
-        print(f'Time (in seconds) to complete standard training: {t:0.4f}')
+        # t = run_standard_training()
+        # print(f'Time (in seconds) to complete standard training: {t:0.4f}')
         print('Adversarially training a model...')
         t = run_free_adv_training()
         print(f'Time (in seconds) to complete free adversarial training: {t:0.4f}')
