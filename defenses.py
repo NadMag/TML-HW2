@@ -101,8 +101,25 @@ class SmoothedModel():
         array counting how many times each class was assigned the
         max confidence).
         """
-        # FILL ME
-        pass
+        # x is a single instance we batch over noise
+        # Bad code - we need to know the classes
+        self.model.eval()
+        counts = None
+        with torch.no_grad():
+            for i in range(0, n, batch_size):
+                rep_count = min(n-i, batch_size)
+                x_batch = x.repeat((rep_count, 1, 1, 1))
+                noise = self.sigma * torch.randn_like(x_batch)
+                x_batch = x_batch + noise
+                outputs = self.model(x_batch)
+                num_labels = outputs.shape[1]
+                if counts is None:
+                    counts = torch.zeros((num_labels))
+                predictions = torch.argmax(outputs, dim=1)
+                batch_counts = torch.bincount(predictions, minlength=num_labels)
+                counts += batch_counts
+            
+            return counts
         
     def certify(self, x, n0, n, alpha, batch_size):
         """
@@ -121,13 +138,20 @@ class SmoothedModel():
         """
         
         # find prediction (top class c) - FILL ME
-        
+        class_selection_counts = self._sample_under_noise(x, n0, batch_size)
+        top_class = torch.argmax(class_selection_counts).item()
         
         # compute lower bound on p_c - FILL ME
-        
+        lb_counts = self._sample_under_noise(x, n, batch_size)
+        top_class_counts = lb_counts[top_class].item()
+        lower_bound = proportion_confint(top_class_counts, n, alpha=2*alpha, method="beta")[0]
 
+        if (lower_bound <= 0.5):
+            return SmoothedModel.ABSTAIN, 0
+
+        radius = self.sigma * norm.ppf(lower_bound)
         # done
-        return c, radius
+        return top_class, radius
         
 
 class NeuralCleanse:

@@ -59,7 +59,18 @@ def plot_radii(radii):
     x = [] # radius
     y = [] # accuracy
     # derive x and y from the certified radii - FILL ME
-    
+    radii.sort()
+    num_samples = len(radii)
+    radii = [r for r in radii if r > 0]
+    x, counts = np.unique(radii, return_counts=True)
+
+    greater_rolling_count = 0
+    greater_by_radii = np.empty_like(counts)
+    for i, c in enumerate(reversed(counts)):
+        greater_rolling_count += c
+        greater_by_radii[len(counts)-1-i] = greater_rolling_count 
+
+    y = greater_by_radii/num_samples   
     # plot
     plt.plot(x,y)
 
