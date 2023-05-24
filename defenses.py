@@ -195,7 +195,8 @@ class NeuralCleanse:
         trigger.requires_grad = True
 
         # run self.niters of SGD to find (potential) trigger and mask - FILL ME
-        for i in range(self.niters):
+        i = 0
+        while (i < self.niters):
             for (inputs, labels) in data_loader:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -213,6 +214,9 @@ class NeuralCleanse:
 
                 mask.grad.zero_()
                 trigger.grad.zero_()
+                i += 1
+                if (i == self.niters):
+                    return mask, trigger
 
         # done
         return mask, trigger
