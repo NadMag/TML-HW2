@@ -116,7 +116,7 @@ class SmoothedModel():
                 if counts is None:
                     counts = torch.zeros((num_labels))
                 predictions = torch.argmax(outputs, dim=1)
-                batch_counts = torch.bincount(predictions, minlength=num_labels)
+                batch_counts = torch.bincount(predictions, minlength=num_labels).to(device=counts.device)
                 counts += batch_counts
             
             return counts
@@ -189,10 +189,30 @@ class NeuralCleanse:
         - trigger: 
         """
         # randomly initialize mask and trigger in [0,1] - FILL ME
-        
+        mask = torch.rand(self.dim, device=device)
+        mask.requires_grad = True
+        trigger = torch.rand(self.dim, device=device)
+        trigger.requires_grad = True
 
         # run self.niters of SGD to find (potential) trigger and mask - FILL ME
-        
+        for i in range(self.niters):
+            for (inputs, labels) in data_loader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+                target_labels = c_t * torch.ones(inputs.shape[0], dtype=torch.long, device=device)
+                
+                stamped = inputs*(1 - mask) + trigger*mask
+                outputs = self.model(stamped)
+                loss = self.loss_func(outputs, target_labels) + (self.lambda_c * torch.norm(mask, p=1))
+                loss.backward()
+                
+                mask.data = mask - (self.step_size * mask.grad.sign())
+                mask.data = torch.clamp(mask, 0, 1)
+                trigger.data = trigger - (self.step_size * trigger.grad.sign())
+                trigger.data = torch.clamp(trigger, 0, 1) 
+
+                mask.grad.zero_()
+                trigger.grad.zero_()
 
         # done
         return mask, trigger

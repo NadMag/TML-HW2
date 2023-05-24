@@ -65,7 +65,7 @@ def plot_radii(radii):
     x, counts = np.unique(radii, return_counts=True)
 
     greater_rolling_count = 0
-    greater_by_radii = np.empty_like(counts)
+    greater_by_radii = np.zeros_like(counts)
     for i, c in enumerate(reversed(counts)):
         greater_rolling_count += c
         greater_by_radii[len(counts)-1-i] = greater_rolling_count 
