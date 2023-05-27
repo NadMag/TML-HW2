@@ -189,7 +189,7 @@ class NeuralCleanse:
         - trigger: 
         """
         # randomly initialize mask and trigger in [0,1] - FILL ME
-        mask = torch.rand(self.dim, device=device)
+        mask = torch.rand((1, 1 , self.dim[2], self.dim[3]), device=device)
         mask.requires_grad = True
         trigger = torch.rand(self.dim, device=device)
         trigger.requires_grad = True
