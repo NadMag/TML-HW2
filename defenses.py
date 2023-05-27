@@ -74,8 +74,6 @@ def free_adv_train(model, data_tr, criterion, optimizer, lr_scheduler, \
                 if (iters_elapsed % scheduler_step_iters == 0):
                     lr_scheduler.step()
 
-        #TODO: Remove!!!!        
-        print(f'Epoch: {epoch}: {loss.item()}') 
 
     # done
     return model
@@ -214,9 +212,10 @@ class NeuralCleanse:
 
                 mask.grad.zero_()
                 trigger.grad.zero_()
+
                 i += 1
                 if (i == self.niters):
-                    return mask, trigger
+                    return mask.repeat(1,3,1,1), trigger
 
         # done
-        return mask, trigger
+        return mask.repeat(1,3,1,1), trigger

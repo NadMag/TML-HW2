@@ -70,9 +70,6 @@ def standard_train(model, data_tr, criterion, optimizer, lr_scheduler, device,
             loss.backward()
             optimizer.step()
 
-        #TODO: Remove!!!!        
-        print(f'Epoch: {epoch}: {loss.item()}')
-
         # update scheduler - FILL ME
         lr_scheduler.step()
 
